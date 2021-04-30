@@ -4,9 +4,12 @@
    [java.awt.datatransfer
     DataFlavor
     StringSelection
-    FlavorListener]))
+    FlavorListener])
+  (:require
+    [clojure.core.async :as async]))
 
-(def ^:private flavor-changed? (atom false))
+(defonce ctx (atom {:status :idle
+                    :flavor-changed? false}))
 
 (defn ^:private system-clipboard []
   (. (Toolkit/getDefaultToolkit)
@@ -22,19 +25,31 @@
 (defn ^:private listener [clipboard callback]
   (reify FlavorListener
     (flavorsChanged [this event]
-      (if @flavor-changed?
-        (reset! flavor-changed? false)
-        (do
-          (reset! flavor-changed? true)
-          (if-let [content  (get-content clipboard)]
-            (do
-              (.setContents clipboard (StringSelection. content) nil)
-              (callback content))
-            (.setContents clipboard (StringSelection. "") nil)))))))
+      (when (= :listening (:status @ctx))
+        (cond
+          (:flavor-changed? @ctx)
+          (swap! ctx assoc :flavor-changed? false)
 
-(defn listen [callback]
-  (let [clipboard (system-clipboard)]
-    (.addFlavorListener clipboard (listener clipboard callback))))
+          :else
+          (do
+            (swap! ctx assoc :flavor-changed? true)
+            (if-let [content  (get-content clipboard)]
+              (do
+                (.setContents clipboard (StringSelection. content) nil)
+                (callback content))
+              (.setContents clipboard (StringSelection. "") nil))))))))
+
+(defn listening? []
+  (= :listening (:status @ctx)))
+
+(defn start-listen [callback]
+  (swap! ctx assoc :status :listening)
+  (async/go
+    (let [clipboard (system-clipboard)]
+      (.addFlavorListener clipboard (listener clipboard callback)))))
+
+(defn stop-listen []
+  (swap! ctx assoc :status :idle))
 
 (defn current-content []
   "")

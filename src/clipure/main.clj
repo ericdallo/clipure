@@ -17,7 +17,7 @@
      :listen (contains? args "listen")}))
 
 (def ^:private help-msg
-  "A command-line utility for manage clipboard.
+  "A command-line utility for manage clipboard history.
 
 Global options:
 -h, --help       List all available commands.
@@ -25,8 +25,8 @@ Global options:
     --version    Return clipure version.
 
 Available commands:
-  get        Return the current text on clipboard.
-  history    List the history of the clipboard.
+  get        Return the last saved entry to clipboard.
+  history    Return the whole clipboard history.
   listen     Keep listening for clipboard changes, use as a separated process.
 
 See https://ericdallo.github.io/clipure for detailed documentation.")

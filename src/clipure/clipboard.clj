@@ -52,7 +52,11 @@
 
 (def listening? listening?*)
 
+(defn ^:private load-history! [ctx]
+  (swap! ctx assoc :entries (db/get-entries)))
+
 (defn start-listen! [ctx]
+  (load-history! ctx)
   (let [clipboard ^Clipboard (system-clipboard)
         _ (swap! ctx assoc
                  :clipboard clipboard

@@ -4,18 +4,16 @@
         cljfx/cljfx {:mvn/version "1.7.22"}}
  :aliases
  {:main {:main-opts ["-m" "clipure.main"]}
-  :test {:extra-paths ["test"]
-         :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}}
-  :runner
-  {:extra-deps {com.cognitect/test-runner
-                {:git/url "https://github.com/cognitect-labs/test-runner"
-                 :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}}
-   :main-opts ["-m" "cognitect.test-runner"
-               "-d" "test"]}
-  :prod-jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.211"}}
-             :exec-fn hf.depstar/uberjar
-             :exec-args {:aot true
-                         :jar "clipure.jar"
-                         :main-class "clipure.main"
-                         :sync-pom true
-                         :jvm-opts ["-Dcljfx.skip-javafx-initialization=true"]}}}}
+  :test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.70.1086"}}
+         :extra-paths ["test"]
+         :main-opts ["-m" "kaocha.runner"]}
+  :build {:extra-paths ["resources"]
+          :extra-deps {babashka/fs {:mvn/version "0.1.11"}}
+          :replace-deps {io.github.clojure/tools.build {:tag "v0.8.3" :sha "0d20256"}
+                         com.github.ericdallo/deps-bin {:mvn/version "0.2.0"}
+                         slipset/deps-deploy {:mvn/version "0.2.0"}}
+          :ns-default build}
+  :native {:jvm-opts ["-server"
+                      "-Dclojure.compiler.direct-linking=true"
+                      "-Dclojure.spec.skip-macros=true"]
+           :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}}}

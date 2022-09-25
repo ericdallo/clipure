@@ -1,6 +1,6 @@
-(ns ericdallo.clipure-test
+(ns clipure.main-test
   (:require [clojure.test :refer :all]
-            [ericdallo.clipure :refer :all]))
+            [clipure.main :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

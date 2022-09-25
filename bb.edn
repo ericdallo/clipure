@@ -1,0 +1,12 @@
+{:paths ["scripts"]
+ :deps {}
+ :min-bb-version "0.8.156"
+ :tasks {clean make/clean
+
+         pom make/pom
+         ;; jar make/jar
+         uberjar make/uberjar
+
+         native-cli make/native-cli
+
+         test make/test}}

@@ -9,5 +9,6 @@
          uberjar make/uberjar
 
          native-cli make/native-cli
+         native-trace make/native-trace
 
          test make/test}}

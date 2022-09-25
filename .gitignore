@@ -13,6 +13,6 @@
 /.socket-repl-port
 .hgignore
 .hg/
-./clipure
-*build_artifacts.txt
+/clipure
+/clipure.build_artifacts.txt
 reports/

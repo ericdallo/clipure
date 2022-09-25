@@ -95,14 +95,15 @@
   ]
 },
 {
-  "name":"java.lang.PanwHooksNs"
-},
-{
   "name":"java.lang.System",
   "methods":[
     {"name":"load","parameterTypes":["java.lang.String"] }, 
     {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }
   ]
+},
+{
+  "name":"java.lang.Thread",
+  "methods":[{"name":"yield","parameterTypes":[] }]
 },
 {
   "name":"sun.awt.SunHints",
@@ -124,6 +125,10 @@
     {"name":"globalErrorHandler","parameterTypes":["long","long"] }, 
     {"name":"init","parameterTypes":["long"] }
   ]
+},
+{
+  "name":"sun.awt.X11.XRootWindow",
+  "methods":[{"name":"getXRootWindow","parameterTypes":[] }]
 },
 {
   "name":"sun.awt.X11.XToolkit",

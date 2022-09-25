@@ -3,7 +3,8 @@
   (:require
    [babashka.deps :as deps]
    [babashka.fs :as fs]
-   [babashka.process :as p]))
+   [babashka.process :as p]
+   [clojure.string :as string]))
 
 (def clipure-bin (if (#'fs/windows?)
                    "clipure.exe"
@@ -37,6 +38,14 @@
 (defn native-cli []
   (-> (deps/clojure ["-T:build" "native-cli"] {})
       (p/check)))
+
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
+(defn native-trace [& args]
+  (if-let [graal-home (System/getenv "GRAALVM_HOME")]
+    (p/shell (string/join " "
+                          (concat [(str graal-home "bin/java -jar -agentlib:native-image-agent=config-output-dir=META-INF/native-image target/clipure-standalone.jar")]
+                                  args)))
+    (println "Set GRAALVM_HOME env")))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn test []

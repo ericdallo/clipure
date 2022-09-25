@@ -17,6 +17,12 @@
       "pattern":"\\Qclipure/config__init.class\\E"
     }, 
     {
+      "pattern":"\\Qclipure/db.clj\\E"
+    }, 
+    {
+      "pattern":"\\Qclipure/db__init.class\\E"
+    }, 
+    {
       "pattern":"\\Qclipure/main.clj\\E"
     }, 
     {
@@ -498,6 +504,12 @@
     }, 
     {
       "pattern":"\\Qclojure/walk__init.class\\E"
+    }, 
+    {
+      "pattern":"\\Qcognitect/transit.clj\\E"
+    }, 
+    {
+      "pattern":"\\Qcognitect/transit__init.class\\E"
     }
   ]},
   "bundles":[{

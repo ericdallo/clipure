@@ -33,6 +33,9 @@
   "name":"clipure.config__init"
 },
 {
+  "name":"clipure.db__init"
+},
+{
   "name":"clipure.main__init"
 },
 {
@@ -744,6 +747,51 @@
   "name":"clojure.walk__init"
 },
 {
+  "name":"cognitect.transit.HandlerMapContainer"
+},
+{
+  "name":"cognitect.transit.HandlerMapProvider"
+},
+{
+  "name":"cognitect.transit.Reader"
+},
+{
+  "name":"cognitect.transit.WithMeta"
+},
+{
+  "name":"cognitect.transit.Writer"
+},
+{
+  "name":"cognitect.transit__init"
+},
+{
+  "name":"com.cognitect.transit.ArrayReadHandler"
+},
+{
+  "name":"com.cognitect.transit.ArrayReader"
+},
+{
+  "name":"com.cognitect.transit.MapReadHandler"
+},
+{
+  "name":"com.cognitect.transit.MapReader"
+},
+{
+  "name":"com.cognitect.transit.ReadHandler"
+},
+{
+  "name":"com.cognitect.transit.SPI.ReaderSPI"
+},
+{
+  "name":"com.cognitect.transit.TransitFactory"
+},
+{
+  "name":"com.cognitect.transit.TransitFactory$Format"
+},
+{
+  "name":"com.cognitect.transit.WriteHandler"
+},
+{
   "name":"java.awt.Image"
 },
 {
@@ -1063,6 +1111,9 @@
 },
 {
   "name":"java.util.concurrent.locks.ReentrantLock"
+},
+{
+  "name":"java.util.function.Function"
 },
 {
   "name":"java.util.regex.Matcher"

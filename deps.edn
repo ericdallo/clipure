@@ -1,6 +1,7 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        org.clojure/core.async {:mvn/version "1.5.648"}}
+        org.clojure/core.async {:mvn/version "1.5.648"}
+        com.cognitect/transit-clj {:mvn/version "1.0.329"}}
  :aliases
  {:main {:main-opts ["-m" "clipure.main"]}
   :test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.70.1086"}}

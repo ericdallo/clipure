@@ -27,7 +27,7 @@ Global options:
 Available commands:
   get        Return the current text on clipboard.
   history    List the history of the clipboard.
-  listen     Keep listening for clipboard changes.
+  listen     Keep listening for clipboard changes, use as a separated process.
 
 See https://ericdallo.github.io/clipure for detailed documentation.")
 
@@ -37,21 +37,21 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
 (defn -main
   "Entrypoint for clipure cli."
   [& args]
-  (let [{:keys [help version get history listen]} (parse-args args)]
+  (let [{:keys [help version get history listen]} (parse-args args)
+        ctx (clipboard/build-ctx)]
     (cond
       help
       (println help-msg)
       version
       (println version-msg)
       get
-      (println (clipboard/current-content))
+      (println (clipboard/current-entry ctx))
       history
-      (println (string/join "\n" (clipboard/history)))
+      (println (string/join "\n" (clipboard/history ctx)))
       listen
-      (clipboard/start-listen
-        (fn [new-value]
-          (println (format "Adding value to clipboard history: '%s'" new-value))))
+      (do (clipboard/start-listen! ctx)
+          (println "Listening..."))
       :else
-      (println help-msg)))
-  (while (clipboard/listening?)
-    (Thread/sleep 250)))
+      (println help-msg))
+    (while (clipboard/listening? ctx)
+      (Thread/sleep 200))))

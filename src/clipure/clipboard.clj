@@ -1,6 +1,7 @@
 (ns clipure.clipboard
   (:require
-   [clojure.core.async :as async])
+   [clojure.core.async :as async]
+   [clipure.db :as db])
   (:import
    (java.awt Toolkit)
    (java.awt.datatransfer DataFlavor FlavorListener StringSelection)
@@ -8,51 +9,62 @@
 
 (set! *warn-on-reflection* true)
 
-(defonce ctx (atom {:status :idle
-                    :flavor-changed? false}))
+(defn build-ctx []
+  (atom {:status :idle
+         :entries []
+         :flavor-changed? false}))
+
+(defn ^:private listening?* [ctx]
+  (= :listening (:status @ctx)))
 
 (defn ^:private system-clipboard []
   (. (Toolkit/getDefaultToolkit)
      (getSystemClipboard)))
 
-(defn ^:private get-content [^Clipboard clipboard]
+(defn ^:private get-clipboard-entry [^Clipboard clipboard]
   (try
     (.getData clipboard DataFlavor/stringFlavor)
     (catch Exception e
-      (println "Error accessing clipboard content:" e)
+      (println "Error accessing clipboard entry:" e)
       nil)))
 
-(defn ^:private listener [^Clipboard clipboard callback]
-  (reify FlavorListener
-    (flavorsChanged [_this _event]
-      (when (= :listening (:status @ctx))
-        (cond
-          (:flavor-changed? @ctx)
-          (swap! ctx assoc :flavor-changed? false)
+(defn ^:private listener [entry-set-fn ctx]
+  (let [clipboard ^Clipboard (:clipboard @ctx)]
+    (reify FlavorListener
+      (flavorsChanged [_this _event]
+        (when (listening?* ctx)
+          (cond
+            (:flavor-changed? @ctx)
+            (swap! ctx assoc :flavor-changed? false)
 
-          :else
-          (do
-            (swap! ctx assoc :flavor-changed? true)
-            (if-let [content (get-content clipboard)]
-              (do
-                (.setContents clipboard (StringSelection. content) nil)
-                (callback content))
-              (.setContents clipboard (StringSelection. "") nil))))))))
+            :else
+            (do
+              (swap! ctx assoc :flavor-changed? true)
+              (if-let [entry (get-clipboard-entry clipboard)]
+                (do
+                  (.setContents clipboard (StringSelection. entry) nil)
+                  (entry-set-fn entry))
+                (.setContents clipboard (StringSelection. "") nil)))))))))
 
-(defn listening? []
-  (= :listening (:status @ctx)))
+(defn ^:private save-new-entry! [entry ctx]
+  (swap! ctx update :entries conj entry)
+  (db/save-entry! ctx))
 
-(defn start-listen [callback]
-  (swap! ctx assoc :status :listening)
-  (async/go
-    (let [clipboard ^Clipboard (system-clipboard)]
-      (.addFlavorListener clipboard (listener clipboard callback)))))
+(def listening? listening?*)
 
-(defn stop-listen []
-  (swap! ctx assoc :status :idle))
+(defn start-listen! [ctx]
+  (let [clipboard ^Clipboard (system-clipboard)
+        _ (swap! ctx assoc
+                 :clipboard clipboard
+                 :status :listening)
+        listener (listener #(save-new-entry! % ctx) ctx)]
+    (async/go
+      (.addFlavorListener clipboard listener))
+    ctx))
 
-(defn current-content []
-  "")
+(defn history [ctx]
+  (or (seq (:entries @ctx))
+      (db/get-entries)))
 
-(defn history []
-  '("1" "2"))
+(defn current-entry [ctx]
+  (last (history ctx)))

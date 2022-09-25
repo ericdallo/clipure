@@ -41,9 +41,10 @@
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn native-trace [& args]
+  (uberjar)
   (if-let [graal-home (System/getenv "GRAALVM_HOME")]
     (p/shell (string/join " "
-                          (concat [(str graal-home "bin/java -jar -agentlib:native-image-agent=config-output-dir=META-INF/native-image target/clipure-standalone.jar")]
+                          (concat [(str graal-home "bin/java -jar -agentlib:native-image-agent=config-output-dir=resources/META-INF/native-image/clipure/clipure clipure-standalone.jar")]
                                   args)))
     (println "Set GRAALVM_HOME env")))
 

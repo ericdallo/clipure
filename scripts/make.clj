@@ -18,6 +18,11 @@
       (fs/delete-tree f))))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
+(defn run [& args]
+  (-> (deps/clojure (concat ["-M:main"] args) {})
+      (p/check)))
+
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn pom []
   (-> (deps/clojure ["-T:build" "pom"] {})
       (p/check)))

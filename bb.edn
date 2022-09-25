@@ -3,6 +3,7 @@
  :min-bb-version "0.8.156"
  :tasks {clean make/clean
 
+         run make/run
          pom make/pom
          ;; jar make/jar
          uberjar make/uberjar

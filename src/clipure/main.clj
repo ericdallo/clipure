@@ -5,6 +5,8 @@
    [clojure.string :as string])
   (:gen-class))
 
+(set! *warn-on-reflection* true)
+
 (defn ^:private parse-args [args]
   (let [args (reduce #(assoc %1 %2 true) {} args)]
     {:help (or (contains? args "--help")

@@ -1,0 +1,7 @@
+[
+{
+  "name":"com.sun.javafx.tk.quantum.QuantumToolkit",
+  "allPublicMethods": true,
+  "allPublicConstructors":true
+}
+]

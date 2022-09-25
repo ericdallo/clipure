@@ -15,5 +15,6 @@
           :ns-default build}
   :native {:jvm-opts ["-server"
                       "-Dclojure.compiler.direct-linking=true"
-                      "-Dclojure.spec.skip-macros=true"]
+                      "-Dclojure.spec.skip-macros=true"
+                      "-Djava.awt.headless=false"]
            :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}}}

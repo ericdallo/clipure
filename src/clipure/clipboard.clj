@@ -1,7 +1,7 @@
 (ns clipure.clipboard
   (:require
-   [clojure.core.async :as async]
-   [clipure.db :as db])
+   [clipure.db :as db]
+   [clojure.core.async :as async])
   (:import
    (java.awt Toolkit)
    (java.awt.datatransfer DataFlavor FlavorListener StringSelection)
@@ -23,7 +23,9 @@
 
 (defn ^:private get-clipboard-entry [^Clipboard clipboard]
   (try
-    (.getData clipboard DataFlavor/stringFlavor)
+    (let [entry (.getData clipboard DataFlavor/stringFlavor)]
+      (when (not= "" entry)
+        entry))
     (catch Exception e
       (println "Error accessing clipboard entry:" e)
       nil)))
@@ -55,6 +57,13 @@
 (defn ^:private load-history! [ctx]
   (swap! ctx assoc :entries (db/get-entries)))
 
+(defn history [ctx]
+  (or (seq (:entries @ctx))
+      (db/get-entries)))
+
+(defn current-entry [ctx]
+  (last (history ctx)))
+
 (defn start-listen! [ctx]
   (load-history! ctx)
   (let [clipboard ^Clipboard (system-clipboard)
@@ -65,10 +74,3 @@
     (async/go
       (.addFlavorListener clipboard listener))
     ctx))
-
-(defn history [ctx]
-  (or (seq (:entries @ctx))
-      (db/get-entries)))
-
-(defn current-entry [ctx]
-  (last (history ctx)))

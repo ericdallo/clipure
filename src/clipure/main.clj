@@ -8,13 +8,13 @@
 (set! *warn-on-reflection* true)
 
 (defn ^:private parse-args [args]
-  (let [args (reduce #(assoc %1 %2 true) {} args)]
-    {:help (or (contains? args "--help")
-               (contains? args "-h"))
-     :version (contains? args "--version")
-     :get (contains? args "get")
-     :history (contains? args "history")
-     :listen (contains? args "listen")}))
+  (let [vargs (reduce #(assoc %1 %2 true) {} args)]
+    {:help (or (contains? vargs "--help")
+               (contains? vargs "-h"))
+     :version (contains? vargs "--version")
+     :get (contains? vargs "get")
+     :history (contains? vargs "history")
+     :listen (contains? vargs "listen")}))
 
 (def ^:private help-msg
   "A command-line utility for manage clipboard history.
@@ -25,9 +25,10 @@ Global options:
     --version    Return clipure version.
 
 Available commands:
-  get        Return the last saved entry to clipboard.
-  history    Return the whole clipboard history.
-  listen     Keep listening for clipboard changes, use as a separated process.
+  get           Return the last saved entry to clipboard.
+  history       Return the whole clipboard history.
+  listen        Keep listening for clipboard changes, use as a separated process.
+  paste <text>  Paste text to current cursor position.
 
 See https://ericdallo.github.io/clipure for detailed documentation.")
 

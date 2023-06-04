@@ -93,3 +93,7 @@
         selection (StringSelection. text)]
     (.setContents clipboard selection selection)
     (save-new-entry! text ctx)))
+
+(defn clear [ctx]
+  (db/sync-db! [])
+  (sync-atom-with-db! ctx))

@@ -20,6 +20,7 @@
      :history (contains? vargs "history")
      :copy (when-let [pos (get vargs "copy")]
              (nth args (inc pos)))
+     :clear (contains? vargs "clear")
      :listen (contains? vargs "listen")}))
 
 (def ^:private help-msg
@@ -36,6 +37,7 @@ Available commands:
   history       Return the whole clipboard history.
   listen        Keep listening for clipboard changes, use as a separated process.
   copy <text>   Copy text to the clipboard.
+  clear         Clear all clipboard history.
 
 See https://ericdallo.github.io/clipure for detailed documentation.")
 
@@ -45,7 +47,7 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
 (defn -main
   "Entrypoint for clipure cli."
   [& args]
-  (let [{:keys [help version get history listen copy]} (parse-args args)
+  (let [{:keys [help version get history listen copy clear]} (parse-args args)
         ctx (clipboard/build-ctx)]
     (cond
       help
@@ -58,6 +60,8 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
       (println (string/join "\n" (clipboard/history ctx)))
       copy
       (clipboard/copy copy ctx)
+      clear
+      (clipboard/clear ctx)
       listen
       (do (clipboard/start-listen! ctx)
           (println "Listening..."))

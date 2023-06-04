@@ -8,12 +8,17 @@
 (set! *warn-on-reflection* true)
 
 (defn ^:private parse-args [args]
-  (let [vargs (reduce #(assoc %1 %2 true) {} args)]
+  (let [args (vec args)
+        vargs (reduce #(-> %1
+                           (assoc %2 (or (:index %1) 0))
+                           (update :index (fnil inc 0))) {} args)]
     {:help (or (contains? vargs "--help")
                (contains? vargs "-h"))
      :version (contains? vargs "--version")
      :get (contains? vargs "get")
      :history (contains? vargs "history")
+     :copy (when-let [pos (get vargs "copy")]
+             (nth args (inc pos)))
      :listen (contains? vargs "listen")}))
 
 (def ^:private help-msg
@@ -28,7 +33,7 @@ Available commands:
   get           Return the last saved entry to clipboard.
   history       Return the whole clipboard history.
   listen        Keep listening for clipboard changes, use as a separated process.
-  paste <text>  Paste text to current cursor position.
+  copy <text>   Copy text to clipboard.
 
 See https://ericdallo.github.io/clipure for detailed documentation.")
 
@@ -38,7 +43,7 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
 (defn -main
   "Entrypoint for clipure cli."
   [& args]
-  (let [{:keys [help version get history listen]} (parse-args args)
+  (let [{:keys [help version get history listen copy]} (parse-args args)
         ctx (clipboard/build-ctx)]
     (cond
       help
@@ -49,6 +54,8 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
       (println (clipboard/current-entry ctx))
       history
       (println (string/join "\n" (clipboard/history ctx)))
+      copy
+      (clipboard/copy copy ctx)
       listen
       (do (clipboard/start-listen! ctx)
           (println "Listening..."))

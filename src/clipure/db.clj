@@ -35,9 +35,9 @@
     (catch Throwable e
       (println "Error" "Could not load global cache from DB" e))))
 
-(defn save-entry! [ctx]
+(defn sync-db! [entries]
   (upsert-cache! {:version version
-                  :entries (:entries @ctx)} (transit-global-db-file)))
+                  :entries (vec entries)} (transit-global-db-file)))
 
 (defn get-entries []
-  (:entries (read-cache (transit-global-db-file))))
+  (vec (:entries (read-cache (transit-global-db-file)))))

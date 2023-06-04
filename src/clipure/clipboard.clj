@@ -11,7 +11,6 @@
 
 (defn build-ctx []
   (atom {:status :idle
-         :entries []
          ;; TODO get this from a setting
          :entries-limit 100
          :flavor-changed? false}))
@@ -33,22 +32,28 @@
       nil)))
 
 (defn ^:private listener [entry-set-fn ctx]
-  (let [clipboard ^Clipboard (:clipboard @ctx)]
-    (reify FlavorListener
-      (flavorsChanged [_this _event]
-        (when (listening?* ctx)
-          (cond
-            (:flavor-changed? @ctx)
-            (swap! ctx assoc :flavor-changed? false)
+  (reify FlavorListener
+    (flavorsChanged [_this _event]
+      (when (listening?* ctx)
+        (cond
+          (:flavor-changed? @ctx)
+          (swap! ctx assoc :flavor-changed? false)
 
-            :else
-            (do
-              (swap! ctx assoc :flavor-changed? true)
-              (if-let [entry (get-clipboard-entry clipboard)]
-                (do
-                  (.setContents clipboard (StringSelection. entry) nil)
-                  (entry-set-fn entry))
-                (.setContents clipboard (StringSelection. "") nil)))))))))
+          :else
+          (let [clipboard ^Clipboard (system-clipboard)]
+            (swap! ctx assoc :flavor-changed? true)
+            (if-let [entry (get-clipboard-entry clipboard)]
+              (do
+                (.setContents clipboard (StringSelection. entry) nil)
+                (entry-set-fn entry))
+              (.setContents clipboard (StringSelection. "") nil))))))))
+
+(defn ^:private all-entries [ctx]
+  (or (some-> (seq (:entries @ctx)) vec)
+      (db/get-entries)))
+
+(defn ^:private sync-atom-with-db! [ctx]
+  (swap! ctx assoc :entries (db/get-entries)))
 
 (defn ^:private save-new-entry! [entry ctx]
   (swap! ctx (fn [{:keys [entries-limit entries] :as ctx}]
@@ -56,31 +61,35 @@
                  (>= (count entries) entries-limit)
                  (update :entries pop)
 
-                 :always
+                 (not= entry (last entries))
                  (update :entries conj entry))))
-  (db/save-entry! ctx))
-
-(defn ^:private load-history! [ctx]
-  (swap! ctx assoc :entries (vec (db/get-entries))))
-
-(defn ^:private history* [ctx]
-  (or (seq (:entries @ctx))
-      (db/get-entries)))
+  (db/sync-db! (:entries @ctx)))
 
 (def listening? listening?*)
 
-(def history history*)
+(def history all-entries)
 
 (defn current-entry [ctx]
-  (last (history* ctx)))
+  (last (all-entries ctx)))
 
 (defn start-listen! [ctx]
-  (load-history! ctx)
   (let [clipboard ^Clipboard (system-clipboard)
         _ (swap! ctx assoc
                  :clipboard clipboard
                  :status :listening)
         listener (listener #(save-new-entry! % ctx) ctx)]
-    (async/go
+    (async/thread
       (.addFlavorListener clipboard listener))
+    (async/thread
+      (loop []
+        (Thread/sleep 300)
+        (sync-atom-with-db! ctx)
+        (recur)))
     ctx))
+
+(defn copy [text ctx]
+  (sync-atom-with-db! ctx)
+  (let [clipboard ^Clipboard (system-clipboard)
+        selection (StringSelection. text)]
+    (.setContents clipboard selection selection)
+    (save-new-entry! text ctx)))

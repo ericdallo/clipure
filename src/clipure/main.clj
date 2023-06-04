@@ -31,7 +31,8 @@ Global options:
     --version    Return clipure version.
 
 Available commands:
-  get           Return the last saved entry to clipboard.
+  get           Return the last entry from clipboard (previous 1).
+  get <n>       Return the previous N entry entry from clipboard.
   history       Return the whole clipboard history.
   listen        Keep listening for clipboard changes, use as a separated process.
   copy <text>   Copy text to the clipboard.

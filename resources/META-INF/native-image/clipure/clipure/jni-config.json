@@ -102,10 +102,6 @@
   ]
 },
 {
-  "name":"java.lang.Thread",
-  "methods":[{"name":"yield","parameterTypes":[] }]
-},
-{
   "name":"sun.awt.SunHints",
   "fields":[{"name":"INTVAL_STROKE_PURE"}]
 },
@@ -127,10 +123,6 @@
   ]
 },
 {
-  "name":"sun.awt.X11.XRootWindow",
-  "methods":[{"name":"getXRootWindow","parameterTypes":[] }]
-},
-{
   "name":"sun.awt.X11.XToolkit",
   "fields":[
     {"name":"modLockIsShiftLock"}, 
@@ -140,6 +132,9 @@
 {
   "name":"sun.awt.X11GraphicsDevice",
   "fields":[{"name":"screen"}]
+},
+{
+  "name":"sun.awt.X11.XRootWindow"
 },
 {
   "name":"sun.java2d.Disposer",

@@ -13,4 +13,6 @@ First, run `clipure listen` as a separated process to listen to clipboard change
 Then you can:
 
 - `clipure history` - return all the entries from history
-- `clipure get` - return last entry from history
+- `clipure get` - return last entry from history (previous 1)
+- `clipure get <n>` - return the previous N entry from history
+- `clipure copy <text>` - copy text to the clipboard

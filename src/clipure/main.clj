@@ -15,7 +15,8 @@
     {:help (or (contains? vargs "--help")
                (contains? vargs "-h"))
      :version (contains? vargs "--version")
-     :get (contains? vargs "get")
+     :get (when-let [pos (get vargs "get")]
+            (Integer/parseInt (nth args (inc pos) "1")))
      :history (contains? vargs "history")
      :copy (when-let [pos (get vargs "copy")]
              (nth args (inc pos)))
@@ -33,7 +34,7 @@ Available commands:
   get           Return the last saved entry to clipboard.
   history       Return the whole clipboard history.
   listen        Keep listening for clipboard changes, use as a separated process.
-  copy <text>   Copy text to clipboard.
+  copy <text>   Copy text to the clipboard.
 
 See https://ericdallo.github.io/clipure for detailed documentation.")
 
@@ -51,7 +52,7 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
       version
       (println version-msg)
       get
-      (println (clipboard/current-entry ctx))
+      (some-> (clipboard/current-entry get ctx) println)
       history
       (println (string/join "\n" (clipboard/history ctx)))
       copy

@@ -69,8 +69,8 @@
 
 (def history all-entries)
 
-(defn current-entry [ctx]
-  (last (all-entries ctx)))
+(defn current-entry [position ctx]
+  (nth (reverse (all-entries ctx)) (dec position) nil))
 
 (defn start-listen! [ctx]
   (let [clipboard ^Clipboard (system-clipboard)

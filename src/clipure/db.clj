@@ -27,12 +27,11 @@
 
 (defn ^:private read-cache [^File cache-file]
   (try
-    (if (.exists cache-file)
+    (when (.exists cache-file)
       (let [cache (with-open [is (io/input-stream cache-file)]
                     (transit/read (transit/reader is :json)))]
         (when (= version (:version cache))
-          cache))
-      (println "Error" "No cache DB file found"))
+          cache)))
     (catch Throwable e
       (println "Error" "Could not load global cache from DB" e))))
 

@@ -55,4 +55,4 @@ See https://ericdallo.github.io/clipure for detailed documentation.")
       :else
       (println help-msg))
     (while (clipboard/listening? ctx)
-      (Thread/sleep 200))))
+      (Thread/sleep 500))))

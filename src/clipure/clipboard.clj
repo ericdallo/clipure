@@ -12,6 +12,8 @@
 (defn build-ctx []
   (atom {:status :idle
          :entries []
+         ;; TODO get this from a setting
+         :entries-limit 100
          :flavor-changed? false}))
 
 (defn ^:private listening?* [ctx]
@@ -49,20 +51,28 @@
                 (.setContents clipboard (StringSelection. "") nil)))))))))
 
 (defn ^:private save-new-entry! [entry ctx]
-  (swap! ctx update :entries conj entry)
+  (swap! ctx (fn [{:keys [entries-limit entries] :as ctx}]
+               (cond-> ctx
+                 (>= (count entries) entries-limit)
+                 (update :entries pop)
+
+                 :always
+                 (update :entries conj entry))))
   (db/save-entry! ctx))
 
-(def listening? listening?*)
-
 (defn ^:private load-history! [ctx]
-  (swap! ctx assoc :entries (db/get-entries)))
+  (swap! ctx assoc :entries (vec (db/get-entries))))
 
-(defn history [ctx]
+(defn ^:private history* [ctx]
   (or (seq (:entries @ctx))
       (db/get-entries)))
 
+(def listening? listening?*)
+
+(def history history*)
+
 (defn current-entry [ctx]
-  (last (history ctx)))
+  (last (history* ctx)))
 
 (defn start-listen! [ctx]
   (load-history! ctx)

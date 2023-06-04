@@ -1,7 +1,6 @@
 (ns clipure.main-test
   (:require
-   [clipure.main :refer :all]
-   [clojure.test :refer :all]))
+   [clojure.test :refer [deftest is testing]]))
 
 (deftest a-test
   (testing "FIXME, I fail."

@@ -17,3 +17,15 @@ Then you can:
 - `clipure get <n>` - return the previous N entry from history.
 - `clipure copy <text>` - copy text to the clipboard.
 - `clipure clear` - clear all clipboard history.
+
+## Development
+
+Install [babashka](https://github.com/babashka/babashka).
+
+### JVM
+
+`bb run` should run the CLI, you can pass any args like `bb run history`.
+
+### Native image
+
+`bb native-cli` will build a native-image with GraalVM, then you can `./clipure`.
